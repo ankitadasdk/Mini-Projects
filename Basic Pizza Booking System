@@ -1,0 +1,243 @@
+while True:
+    a1=int(input("Enter Password.: "))
+    if a1==123:
+       print("Logging in...")
+
+       try:
+                import mysql.connector as msc
+                import datetime
+                import random as rd
+                mydb=msc.connect(host="localhost",user="root",password="123")
+                crs=mydb.cursor()
+                qry01="CREATE DATABASE IF NOT EXISTS Pizza"
+                crs.execute(qry01)
+                qry02="USE Pizza"
+                crs.execute(qry02)
+                
+
+                qry03="CREATE TABLE IF NOT EXISTS CUSTOMER_DETAILS (Order_No varchar(7) primary key,Cust_Name varchar(50),Phone_No VARCHAR(10),Email varchar(50),Address varchar(80),Item_Name varchar(50), Quantity int(2), ModeofPayment int(2))"
+                crs.execute(qry03)
+
+                qry04="INSERT INTO CUSTOMER_DETAILS VALUES   (14854,'Rohan Shaw',767900000,'Rohan645shaw@gamil.com','Shop No-2, Radha Niwas, Mulund (east)','Margherita pizza',2,2) ON DUPLICATE KEY UPDATE Order_No=14854"
+                qry05="INSERT INTO CUSTOMER_DETAILS VALUES   (25412,'Jhilam Kumari',839200000,'Jhilam347k@gmail.com','41 2nd, Sant Sena Marg, Girgau','Double cheese Margherita pizza',1,1) ON DUPLICATE KEY UPDATE Order_No=25412"
+                qry06="INSERT INTO CUSTOMER_DETAILS VALUES   (31451,'Raju Saxena',850900000,'Saxena234@gmail.com','820, G T Karnal Road, Opp Hans Cinema, Azadpur','Fresh veggie pizza',3,2) ON DUPLICATE KEY UPDATE Order_No=31451"
+                qry07="INSERT INTO CUSTOMER_DETAILS VALUES   (47412,'Anant Rao',933319999,'Anantrao@gmail.com','1643/34, Nai Walan, Azadpur','Peppy paneer pizza',5,1) ON DUPLICATE KEY UPDATE Order_No=47412"
+                qry08="INSERT INTO CUSTOMER_DETAILS VALUES   (57525,'Priyanka Das',933329999,'Priyanka32cutie@gmail.com','408, Arenja Corner, Sector 17, Vashi','Veg extravaganza pizza',2,2) ON DUPLICATE KEY UPDATE Order_No=57525"
+                qry09="INSERT INTO CUSTOMER_DETAILS VALUES   (69753,'Amar Yadav',937820000,'Amar34@gmail.com','60/66, Baba Genu Rd, Kalbadevi Rd, Kalbadevi','Cheese dominator pizza',1,1) ON DUPLICATE KEY UPDATE Order_No=69753"
+                qry10="INSERT INTO CUSTOMER_DETAILS VALUES   (64451,'Soham Mondal',983229999,'Mondal666@gmail.com','1, Apollo Ind Estate, Midc, Andheri (west)','Deluxe veggie pizza',2,2) ON DUPLICATE KEY UPDATE Order_No=64451"
+                qry11="INSERT INTO CUSTOMER_DETAILS VALUES   (74521,'Tanisha Gupta',810149999,'Tanishagupta@gmail.com','17/7b, Central Market, Tilak Nagar','Indi tandoori pizza',4,1) ON DUPLICATE KEY UPDATE Order_No=74521"
+                qry12="INSERT INTO CUSTOMER_DETAILS VALUES   (84545,'Pritam Sinha',933259999,'Sinha44@gmail.com','D-5, Ishaque Ahmd Ind, A.k.rd, Marol Naka, Andheri','Cheese in corn pizza',1,2) ON DUPLICATE KEY UPDATE Order_No=84545"
+                qry13="INSERT INTO CUSTOMER_DETAILS VALUES   (94561,'Sudeshna Ghosh',786489999,'Ghoshsudeshna@gmail.com','A 23, Khandsa Road','Fresh veggie pizza',2,1) ON DUPLICATE KEY UPDATE Order_No=94561"
+                crs.execute(qry04)
+                crs.execute(qry05)
+                crs.execute(qry06)
+                crs.execute(qry07)
+                crs.execute(qry08)
+                crs.execute(qry09)
+                crs.execute(qry10)
+                crs.execute(qry11)
+                crs.execute(qry12)
+                crs.execute(qry13)
+                mydb.commit()
+
+                crs.close()
+                
+                if mydb.is_connected():
+                        print("Succesfully connected")                                                                                                                                    #Database will be created in MySQL
+                def main_menu():
+                                print("""
+            ---------------------------------------
+            |      ****MAIN MENU ****       |                 
+            ---------------------------------------
+            |          1) Order Pizza            |
+            ---------------------------------------         
+            |          2) Search Order         | 
+            ---------------------------------------
+            |         3) Cancel Order         |
+            ---------------------------------------
+            |         4) Close/ Exit             |                   
+            ---------------------------------------
+                                """)
+                                    #break                                                                                                                                                                                                        #Main Menu
+                                x=int(input("""YOUR OPTION:-"""))
+
+                                if x==1:
+                                        pizza_booking()
+                              
+                                elif x==2:
+                                          print(" ")
+                                          print(search())
+                      
+                                elif x==3:
+                                          print(" ")
+                                          print(drop())
+                          
+                                elif x==4:
+                                          print(" ")
+                                          print("\n"
+                                                  "      \n"
+                                                  "          ---------------------------------------------------------------------------------------------------\n"
+                                                  "                                                            THANK YOU                                               \n"
+                                                  "          ---------------------------------------------------------------------------------------------------\n"
+                                                                                                                              "\n")
+                                          print('''By    Ankita Das XIIC''')
+                
+                                else:
+                                     print(" ")
+                                     print("WRONG CHOICE PLEASE ENTER A VALID VALUE!")
+                                return("")
+
+                        
+                def pizza_booking():
+                    import mysql.connector
+                    mydb=mysql.connector.connect(host='localhost',user='root',password="123",database='pizza')
+                    crs=mydb.cursor()
+                    mydb.autocommit=True
+                    Cust_Name=input('Enter  Name.:')
+                    Phone_No=input('Enter  Phone No.:')
+                    Psn_Ph_no=str(Phone_No)
+                    Email=input("Email :")
+                    Add=input("Address :")
+                    print("""
+----------------------------------------------------------------------------------------------------------------------------------------------
+                                                                ****PIZZA MENU****                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------
+  1) |   Margherita pizza                                    249          2) |   Cheese in corn pizza                            279  
+----------------------------------------------------------------------------------------------------------------------------------------------
+  3) |   Cheese in tomato pizza                        279          4) |   Double cheese Margherita pizza         349  
+---------------------------------------------------------------------------------------------------------------------------------------------- 
+  5) |   Fresh veggie pizza                               199           6) |   Farmhouse pizza                                  299  
+----------------------------------------------------------------------------------------------------------------------------------------------
+  7) |   Peppy paneer pizza                             349           8) |   BBQ Chicken pizza                               399  
+----------------------------------------------------------------------------------------------------------------------------------------------
+  9) |   Veg extravaganza pizza                       349         10) |   4 cheez pizza                                        279 
+----------------------------------------------------------------------------------------------------------------------------------------------
+11) |   Deluxe veggie pizza                             249         12) |   Paneer makhani pizza                          279 
+----------------------------------------------------------------------------------------------------------------------------------------------
+13) |   Indi tandoori pizza                                349         14) |   Pepperoni Pizza                                   299  
+----------------------------------------------------------------------------------------------------------------------------------------------
+                                     PLEASE CHOOSE FROM THE UPPER TABLE                                        
+----------------------------------------------------------------------------------------------------------------------------------------------
+                                """)
+                                    #break
+                #Pizza Menu
+                    p={'Margherita pizza':249,
+                       'Cheese in corn pizza':279,
+                       'Cheese in tomato pizza':349,
+                       'Double cheese Margherita pizza':349,
+                       'Fresh veggie pizza':199,
+                       'Farmhouse pizza':299,
+                       'Peppy paneer pizza':349,
+                       'BBQ Chicken pizza':399,
+                       'Veg extravaganza pizza':349,
+                       '4 cheez pizza':279,
+                       'Deluxe veggie pizza':249,
+                       'Paneer makhani pizza':279,
+                       'Indi tandoori pizza':349,
+                       'Pepperoni Pizza':299}
+                      
+                    I_Name=input("Pizza Name :")
+                    Qty=input("Enter Quantity :")
+                    Quant=int(Qty)
+                    O_No=rd.randint(00000,99999)
+                    MOP=input("Mode of Payment (For Online - 1 / For Cash on Delivery -  2) :")
+                    Mode=int(MOP)
+                    OTP=rd.randint(000000,999999)
+                    Price=p[I_Name]*Quant
+                    fee=Price+30
+                    s1="INSERT INTO CUSTOMER_DETAILS VALUES('%s','%s','%s','%s','%s','%s',%s,%s)"%(O_No,Cust_Name,Psn_Ph_no,Email,Add,I_Name,Quant,Mode)
+                    crs.execute(s1)
+                    print()
+                    print('  ***ORDER BOOKED SUCCESSFULLY***')
+                    print(
+                        "Order Number :",O_No)
+                    print(
+                        "Name :", Cust_Name)
+                    print(
+                        "Email :", Email)
+                    print(
+                        "Address :", Add)
+                    print(
+                         "Item :",I_Name)
+                    print(
+                        "Quantity :",Quant)
+                    if MOP==1:
+                        print("Mode of Payment : Online Payment")
+                    else:
+                        print("Mode of Payment : Cash on Delivery")
+                    
+                    print(
+                        "Bill Amount:",fee, "(including delivery fees)")
+                    print(
+                        "Your One Time Password is: ", OTP)                                                             
+                    return("")                                                                                                                                                    #Insert New Customer Booking / Details in MySQL
+
+                
+                def drop():
+                        import mysql.connector as msc
+                        mydb=msc.connect(host="localhost",
+                                 user="root",
+                                 password="123",
+                                 )
+                        
+                        crs=mydb.cursor()
+                        mydb.autocommit=True
+                        crs.execute("use pizza")
+                        Self_Order_No=int(input("Enter Your Order Number. :"))                                                     
+                        Self_Name=input("Enter Your Name.:")
+                        Self_Phno=int(input("Enter You Phone no.:"))
+                        #qry='DELETE FROM customer_details WHERE Order_No=(%s) or Cust_Name=(%s) or Phone_No=(%s)'
+                        
+                        s=input("ARE YOU SURE  YOU WANT TO CANCEL THE ORDER (YES/NO): ")
+                        a=[]
+                        for i in s:
+                            a.append(i)        
+                        
+                        if len(s)==3: 
+                           crs.execute('DELETE FROM customer_details WHERE Order_No=(%s) or Cust_Name=(%s) or Phone_No=(%s)',(Self_Order_No,Self_Name,Self_Phno,))
+                        
+                        else:
+                             print("         Order NOT Cancelled")
+                             
+                        print("")
+                        print("****YOUR ORDER IS CANCELLED****")
+                        return("")                                                                                                                                                                          #Drop / Remove Data from MySQL
+
+                def search():
+                        import mysql.connector as msc
+                        mydb=msc.connect(host="localhost",
+                                 user="root",
+                                 password="123",
+                                 )
+                        crs=mydb.cursor()
+                        mydb.autocommit=True
+                        crs.execute("use pizza")
+                        My_Order=int(input("Enter Your Order Number.:"))
+                        crs.execute('select * from customer_details where Order_No=(%s)',(My_Order,))
+                        data=crs.fetchall()
+                        a=[]
+                        for i in data:
+                            a.append(i)
+                            
+                        if len(a)!=1:
+                            print('~!~!~!~!~~NO DATA FOUND~~!~!~!~!~')
+                            
+                        else:
+                            print(a)
+                            mydb.commit()
+                        return("")                                                                                                                                                                                             #Search Data in MySQL
+                
+                    
+
+                print(main_menu())
+
+       except():
+                   pass
+    else:
+            print("Password is incorrect,\nPlease enter the correct password.")
+            a2=str(input("Enter any number to again enter password or press any alphabet to exit:"))
+            print()
+            if a2.isalpha():
+                print("Thanks for using our service.")
+                print('''By Ankita Das''')
+                break                                                                                                                                                                                                                                      #Finish  
