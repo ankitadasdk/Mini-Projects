@@ -1,0 +1,86 @@
+/* 
+   Retro-Synth Weather Styling 
+*/
+
+.root-pane {
+    /* Set the fallback Monospaced font */
+    -fx-font-family: "Courier New", monospace;
+    
+    /* 
+       A dark purple background with a repeating linear-gradient scanline effect.
+       The gradient overlays alternating transparent and dark semi-transparent horizontal lines
+       to simulate CRT scanlines over the #2d1b4e purple base colour.
+    */
+    -fx-background-color: #2d1b4e, linear-gradient(from 0px 0px to 0px 6px, repeat, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.35) 100%);
+    -fx-background-insets: 0, 0;
+    -fx-padding: 30;
+}
+
+/* Force zero corner radius on EVERYTHING */
+* {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+/* Top bar spacing and layout */
+.top-bar {
+    -fx-padding: 20;
+    -fx-spacing: 15;
+}
+
+/* Search Input Field */
+.search-field {
+    -fx-background-color: #110022; /* very dark purple to hollow it out */
+    -fx-text-fill: #ff00ff; /* neon pink text inside input */
+    -fx-prompt-text-fill: #770077; /* darker pink for placeholder */
+    -fx-border-color: #00ffff; /* cyan border */
+    -fx-border-width: 3;
+    -fx-padding: 12 15;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.search-field:focused {
+    -fx-border-color: #ff00ff; /* change focus border to neon pink */
+}
+
+/* "LOAD DATA" Button */
+.load-btn {
+    -fx-background-color: #110022; 
+    -fx-text-fill: #00ffff; /* cyan text */
+    -fx-border-color: #ff00ff; /* neon pink border */
+    -fx-border-width: 3;
+    -fx-padding: 12 25;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.load-btn:hover {
+    -fx-background-color: #ff00ff; /* neon pink background */
+    -fx-text-fill: #110022;        /* dark text on hover */
+    -fx-border-color: #00ffff;     /* cyan border on hover */
+}
+
+.load-btn:pressed {
+    -fx-background-color: #00ffff; /* invert to cyan on press */
+    -fx-border-color: #00ffff;
+}
+
+/* Temperature Label: Big, Blocky, Neon Glow */
+.temp-label {
+    -fx-text-fill: #ffffff; /* crisp white for contrast against the glow */
+    -fx-font-size: 100px;
+    -fx-font-weight: bold;
+    /* User-requested neon glow effect: */
+    -fx-effect: dropshadow(three-pass-box, #ff00ff, 15, 0.5, 0, 0);
+    -fx-alignment: center;
+}
+
+/* Condition Label: e.g. [ CLOUDY ] */
+.condition-label {
+    -fx-text-fill: #00ffff; /* cyan text */
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
