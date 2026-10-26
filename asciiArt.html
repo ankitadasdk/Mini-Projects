@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>living ascii image - perfect aspect ratio</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: monospace;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            color: #00ffcc;
+            backdrop-filter: blur(5px);
+        }
+        input[type="file"] {
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        upload a pic: <input type="file" id="upload" accept="image/*">
+    </div>
+    <canvas id="matrixCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        const upload = document.getElementById('upload');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+
+        const offCanvas = document.createElement('canvas');
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+        
+        let imgData = null;
+        let imgLoaded = false;
+        let cols = 0, rows = 0;
+        
+        // Accurate monospace font aspect ratio mapping
+        const fontSize = 12;
+        const cellW = 7;  // Monospace characters are roughly 0.6x their height
+        const cellH = 12;
+
+        // Clean, smooth density ramp (removed the aggressive directional slashes)
+        const densityChars = " .`,:;~=+*xX0UOMW#@";
+
+        function setupCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            if (imgLoaded) updateOffscreenCanvas();
+        }
+
+        window.addEventListener('resize', setupCanvas);
+
+        upload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    window.currentImg = img;
+                    imgLoaded = true;
+                    updateOffscreenCanvas();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function updateOffscreenCanvas() {
+            cols = Math.floor(width / cellW);
+            rows = Math.floor(height / cellH);
+            
+            offCanvas.width = cols;
+            offCanvas.height = rows;
+
+            // Calculate physical screen COVER logic to prevent aspect ratio distortion
+            const imgRatio = window.currentImg.width / window.currentImg.height;
+            const screenRatio = width / height;
+            
+            let physDrawW, physDrawH, physOffsetX = 0, physOffsetY = 0;
+            
+            if (imgRatio > screenRatio) {
+                // Image is wider than screen
+                physDrawH = height;
+                physDrawW = height * imgRatio;
+                physOffsetX = (width - physDrawW) / 2;
+            } else {
+                // Image is taller than screen
+                physDrawW = width;
+                physDrawH = width / imgRatio;
+                physOffsetY = (height - physDrawH) / 2;
+            }
+
+            // Draw to offscreen buffer compensating for the rectangular cell shape
+            offCtx.clearRect(0, 0, cols, rows);
+            offCtx.drawImage(
+                window.currentImg, 
+                physOffsetX / cellW, 
+                physOffsetY / cellH, 
+                physDrawW / cellW, 
+                physDrawH / cellH
+            );
+            imgData = offCtx.getImageData(0, 0, cols, rows).data;
+        }
+
+        let t = 0;
+
+        function render() {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+
+            if (imgLoaded && imgData) {
+                ctx.font = `bold ${fontSize}px monospace`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        
+                        // Physical coordinates for smooth, uniform math
+                        let px = c * cellW;
+                        let py = r * cellH;
+
+                        // Smooth fluid wind displacement (no harsh rippling)
+                        let waveX = Math.sin(py * 0.005 + t) * 1.5 + Math.cos(px * 0.008 - t * 0.8) * 1.0;
+                        let waveY = Math.cos(px * 0.005 + t * 1.2) * 1.5 + Math.sin(py * 0.008 + t * 0.5) * 1.0;
+
+                        // Calculate where to sample the pixel from
+                        let sampleX = Math.floor(c + waveX);
+                        let sampleY = Math.floor(r + waveY);
+
+                        // Clamp to prevent out-of-bounds smearing at the edges
+                        sampleX = Math.max(0, Math.min(cols - 1, sampleX));
+                        sampleY = Math.max(0, Math.min(rows - 1, sampleY));
+
+                        let index = (sampleY * cols + sampleX) * 4;
+                        
+                        // Ignore blank pixels
+                        if (imgData[index + 3] === 0) continue;
+
+                        const boost = 1.3; // Slight color boost for vibrancy
+                        let rCol = Math.min(255, imgData[index] * boost);
+                        let gCol = Math.min(255, imgData[index + 1] * boost);
+                        let bCol = Math.min(255, imgData[index + 2] * boost);
+
+                        let brightness = (rCol * 0.299 + gCol * 0.587 + bCol * 0.114) / 255;
+                        
+                        // Subtle pulsing light effect
+                        brightness += Math.sin(px * 0.01 + py * 0.01 - t * 2) * 0.05;
+                        brightness = Math.max(0, Math.min(1, brightness));
+
+                        let charIdx = Math.floor(brightness * (densityChars.length - 1));
+                        let char = densityChars[charIdx];
+
+                        if (brightness > 0.02) {
+                            ctx.fillStyle = `rgb(${Math.floor(rCol)}, ${Math.floor(gCol)}, ${Math.floor(bCol)})`;
+                            // Render character perfectly centered in its grid cell
+                            ctx.fillText(char, c * cellW + cellW / 2, r * cellH + cellH / 2);
+                        }
+                    }
+                }
+            } else {
+                ctx.fillStyle = '#00ffcc';
+                ctx.font = `14px monospace`;
+                ctx.fillText("waiting for an image...", width/2, height/2);
+            }
+
+            t += 0.03; // Smooth time step
+            requestAnimationFrame(render);
+        }
+
+        setupCanvas(); 
+        render();
+    </script>
+</body>
+</html>
